@@ -1,13 +1,13 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
 
 	<head>
 		<meta charset="utf-8">
 
-		<title>reveal.js - The HTML Presentation Framework</title>
+		<title>DAMapping - Bean Mapping for devs</title>
 
-		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
-		<meta name="author" content="Hakim El Hattab">
+		<meta name="description" content="DAMapping - presentation of the next Bean Mapping framework for Java">
+		<meta name="author" content="Sébastien Lesaint">
 
 		<meta name="apple-mobile-web-app-capable" content="yes" />
 		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -43,54 +43,249 @@
 			<!-- Any section element inside of this container is displayed as a slide -->
 			<div class="slides">
 				<section>
-					<h1>Reveal.js</h1>
-					<h3>HTML Presentations Made Easy</h3>
+					<h1>DAMapping</h1>
+					<h3>Control your bean mapping (really)</h3>
 					<p>
-						<small>Created by <a href="http://hakim.se">Hakim El Hattab</a> / <a href="http://twitter.com/hakimel">@hakimel</a></small>
+						<small>Created by <a href="http://www.javatronic.fr">Sébastien Lesaint</a></small><br/>
+					    <small>available on GitHub <a href="https://github.com/lesaint/damapping">https://github.com/lesaint/damapping</a></small>
 					</p>
 				</section>
 
 				<section>
-					<h2>Heads Up</h2>
-					<p>
-						reveal.js is a framework for easily creating beautiful presentations using HTML. You'll need a browser with
-						support for CSS 3D transforms to see it in its full glory.
-					</p>
-
-					<aside class="notes">
-						Oh hey, these are some notes. They'll be hidden in your presentation, but you can see them if you open the speaker notes window (hit 's' on your keyboard).
-					</aside>
+					<h2>What's the point of yet another bean mapping framework?</h2>
+					<p>DAMapping <strong>gives you back</strong> <u>the control</u> of bean mapping code</p>
+					<p>and <strong>saves you from the burden</strong> of <u>wiring</u> it into your application</p>
 				</section>
 
-				<!-- Example of nested vertical slides -->
 				<section>
 					<section>
-						<h2>Vertical Slides</h2>
-						<p>
-							Slides can be nested inside of other slides,
-							try pressing <a href="#" class="navigate-down">down</a>.
-						</p>
-						<a href="#" class="image navigate-down">
-							<img width="178" height="238" src="https://s3.amazonaws.com/hakim-static/reveal-js/arrow.png" alt="Down arrow">
-						</a>
+						<h2>Let's see why we need DAMapping</h2>
+					</section>
+
+					<section>
+						<h3>What existing frameworks do</h3>
+						<ul>
+							<li class="fragment">generate mapping code magically</li>
+							<li class="fragment">use reflection, byte-code manipulation, ... to achieve that</li>
+							<li class="fragment">provide ugly customisation solutions (Xml config, annotations with strings constants, ...)</li>
+						</ul>
 					</section>
 					<section>
-						<h2>Basement Level 1</h2>
-						<p>Press down or up to navigate.</p>
+						<h3>What they fail at providing</h3>
+						<ul>
+							<li class="fragment">good testability (especially tree of beans)</li>
+							<li class="fragment">stability (remember last time you upgraded Dozer?)</li>
+							<li class="fragment">type safety and support for refactoring</li>
+							<li class="fragment">performance</li>
+							<li class="fragment">customisation</li>
+						</ul>
+
+						<aside class="notes">
+							<ul>
+								<li>testability: want to test the room mapping alone ? (country -> city -> hotel -> floor -> room)</li>
+								<li>stability:</li>
+								<li>type safety: XML customisation, String parameters</li>
+								<li>everything performs poorer that regular code</li>
+								<li>customisation: stay in the framework's possibilities or die in hell</li>
+							</ul>
+						</aside>
 					</section>
 					<section>
-						<h2>Basement Level 2</h2>
-						<p>Cornify</p>
-						<a class="test" href="http://cornify.com">
-							<img width="280" height="326" src="https://s3.amazonaws.com/hakim-static/reveal-js/cornify.gif" alt="Unicorn">
-						</a>
+						<h3>The root of all evil <small><a href="https://www.youtube.com/watch?v=RgAc7ekYmVA" target="_new"><sup>*</sup></a></small></h3>
+
+						<p class="fragment">Bean Mapping code <u><strong>must</strong></u> be part of the application</p>
+
+						<ul>
+							<li class="fragment">Yes, such code is sometime trivial</li>
+							<li class="fragment">But, having it in the application solves every problems above</li>
+							<li class="fragment">Code can still be generated: once, in your IDE</li>
+						</ul>
 					</section>
 					<section>
-						<h2>Basement Level 3</h2>
-						<p>That's it, time to go back up.</p>
-						<a href="#/2" class="image">
-							<img width="178" height="238" src="https://s3.amazonaws.com/hakim-static/reveal-js/arrow.png" alt="Up arrow" style="-webkit-transform: rotate(180deg);">
-						</a>
+						<h3>Bonuses</h3>
+
+						<ul>
+							<li class="fragment">leverage the power of your IDE (debug, search, refactor!)</li>
+							<li class="fragment">get coverage like any other piece of code (test, quality, ...)</li>
+							<li class="fragment">leverage your SCM: know when and who changed that code! (and maybe even why)</li>
+							<li class="fragment">write it the way you like it !</li>
+						</ul>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2>what is "wiring" exactly?</h2>
+					</section>
+					<section>
+						<h3>First, how to write good mappers</h3>
+
+						<p class="fragment">We should respect basic principles</p>
+						<ul>
+							<li class="fragment">SOC <span class="fragment">=> need one class per object mapping</span></li>
+							<li class="fragment">simple to test <span class="fragment">=> need to "Keep It Simple"</span></li>
+							<li class="fragment">
+								simple to integrate
+								<span class="fragment">=> mockable</span>
+								<span class="fragment">=> need an interface</span></li>
+						</ul>
+					</section>
+					<section>
+						<h3>1 class + 1 interface for every A to B mapping?</h3>
+
+						<ul>
+							<li class="fragment">interface required to integrate mapping code with the rest of the application</li>
+							<li class="fragment">that's what I call "wiring"</li>
+							<li class="fragment">but it is repetitive and low-value</li>
+							<li class="fragment">
+								so, very good candidate for automation!
+								<span class="fragment"> => here comes DAMapping!</span>
+							</li>
+						</ul>
+
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Now, let's see how it works</h2>
+					</section>
+					<section>
+						<h3>Basic principle of DAMapping</h3>
+
+						<ul>
+							<li class="fragment">write bean mapping code in a dedicated class</li>
+							<li class="fragment">annotate it with @Mapper</li>
+							<li class="fragment">1 interface and 1 implementing class are generated at <u>compile time</u></li>
+							<li class="fragment">use them (and not the class you wrote) in your application</li>
+						</ul>
+
+					</section>
+
+					<section>
+						<h3>Basic mapper demo</h3>
+
+						<pre class="fragment"><code data-trim>
+@Mapper
+public class FootoBar {
+
+  public Bar convert(Foo input) {
+    return null; // content doesn't matter
+  }
+
+}
+						</code></pre>
+
+						<p class="fragment">generated interface</p>
+						<pre class="fragment"><code data-trim>
+public class FootoBarMapper {
+
+  Bar convert(Foo input);
+
+}
+						</code></pre>
+
+						<p class="fragment">generated implementing class</p>
+						<pre class="fragment"><code data-trim>
+public class FootoBarMapperImpl implements FootoBarMapper {
+
+  public Bar convert(Foo input) {
+    return new FootoBar().convert(input);
+  }
+
+}
+						</code></pre>
+
+						<p class="fragment"><small>code is not representative of actual generated code as an intermediate Factory is used</small></p>
+					</section>
+
+					<section>
+						<h3>You would rather write an enum?</h3>
+
+						<p class="fragment">and you should!</p>
+						<p class="fragment">its supported, so save on GC and use it!</p>
+						<pre class="fragment"><code data-trim>
+@Mapper
+public enum FootoBar {
+  INSTANCE;
+
+  public Bar convert(Foo input) {
+    return null; // content doesn't matter
+  }
+
+}
+						</code></pre>
+
+						<p class="fragment">generated implementing class</p>
+						<pre class="fragment"><code data-trim>
+public class FootoBarMapperImpl implements FootoBarMapper {
+
+  public Bar convert(Foo input) {
+    return FootoBar.INSTANCE.convert(input);
+  }
+
+}
+						</code></pre>
+						<p class="fragment"><small>again, an intermediate Factory is actually used</small></p>
+					</section>
+
+					<section>
+						<h3>Native support for Guava's Function method</h3>
+
+						<p class="fragment">allows seamless use of mapper to transform collections</p>
+						<pre class="fragment"><code data-trim>
+@Mapper
+public enum FootoBar implements Function&lt;Foo, Bar&gt; {
+  INSTANCE;
+
+  public Bar convert(Foo input) {
+    return null; // content doesn't matter
+  }
+
+}
+						</code></pre>
+						<p class="fragment">generated interface</p>
+						<pre class="fragment"><code data-trim>
+public class FootoBarMapper extends Function&lt;Foo, Bar&gt; {
+
+}
+						</code></pre>
+					</section>
+
+					<section>
+						<h3>Java 8 functional interface support</h3>
+
+						<p class="fragment">it's coming!</p>
+					</section>
+
+				</section>
+
+				<section>
+					<section>
+						<h2>What about other kind of mappings?</h2>
+
+						<p class="fragment">Bean mapping is not always one-to-one</p>
+						<ol>
+							<li class="fragment">can be many-to-one</li>
+							<li class="fragment">mapping code could be externaly paramatrized (think feature fliping, locale, ...)</li>
+						</ol>
+					</section>
+
+					<section>
+						<h3>Many-to-one mappings</h3>
+
+						<p class="fragment">DAMapping does not enforce any method signature <br/>=> just write a method with multiple parameters</p>
+
+						<p>&nbsp;</p>
+
+						<h3>Paramatrized mappings</h3>
+						<p class="fragment">use a MapperFactory</p>
+					</section>
+
+				</section>
+
+				<section>
+					<section>
+						<h2>What is a MapperFactory?</h2>
 					</section>
 				</section>
 
@@ -99,42 +294,6 @@
 					<p>
 						Not a coder? No problem. There's a fully-featured visual editor for authoring these, try it out at <a href="http://slid.es" target="_blank">http://slid.es</a>.
 					</p>
-				</section>
-
-				<section>
-					<h2>Point of View</h2>
-					<p>
-						Press <strong>ESC</strong> to enter the slide overview.
-					</p>
-					<p>
-						Hold down alt and click on any element to zoom in on it using <a href="http://lab.hakim.se/zoom-js">zoom.js</a>. Alt + click anywhere to zoom back out.
-					</p>
-				</section>
-
-				<section>
-					<h2>Works in Mobile Safari</h2>
-					<p>
-						Try it out! You can swipe through the slides and pinch your way to the overview.
-					</p>
-				</section>
-
-				<section>
-					<h2>Marvelous Unordered List</h2>
-					<ul>
-						<li>No order here</li>
-						<li>Or here</li>
-						<li>Or here</li>
-						<li>Or here</li>
-					</ul>
-				</section>
-
-				<section>
-					<h2>Fantastic Ordered List</h2>
-					<ol>
-						<li>One is smaller than...</li>
-						<li>Two is smaller than...</li>
-						<li>Three!</li>
-					</ol>
 				</section>
 
 				<section data-markdown>
