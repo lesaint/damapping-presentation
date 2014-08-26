@@ -46,7 +46,8 @@
 					<h1>DAMapping</h1>
 					<h3>Control your bean mapping (really)</h3>
 					<p>
-						<small>Created by <a href="http://www.javatronic.fr">Sébastien Lesaint</a></small><br/>
+						<small>Created by Sébastien Lesaint <a href="https://twitter.com/LesaintSeb">@LesaintSeb</a></small><br/>
+						<small><a href="http://www.javatronic.fr">www.javatronic.fr</a></small><br/>
 					    <small>available on GitHub <a href="https://github.com/lesaint/damapping">https://github.com/lesaint/damapping</a></small>
 					</p>
 				</section>
@@ -103,7 +104,7 @@
 						</ul>
 					</section>
 					<section>
-						<h3>Bonuses</h3>
+						<h3>Bonuses from mapping code in source</h3>
 
 						<ul>
 							<li class="fragment">leverage the power of your IDE (debug, search, refactor!)</li>
@@ -125,7 +126,7 @@
 						<p class="fragment">We should respect basic principles</p>
 						<ul>
 							<li class="fragment">SOC <span class="fragment">=> need one class per object mapping</span></li>
-							<li class="fragment">simple to test <span class="fragment">=> need to "Keep It Simple"</span></li>
+							<li class="fragment">easy to test bean mapping code <span class="fragment">=> need to "Keep It Simple"</span></li>
 							<li class="fragment">
 								simple to integrate
 								<span class="fragment">=> mockable</span>
@@ -178,7 +179,7 @@ public class FootoBar {
 
 						<p class="fragment">generated interface</p>
 						<pre class="fragment"><code data-trim>
-public class FootoBarMapper {
+public interface FootoBarMapper {
 
   Bar convert(Foo input);
 
@@ -246,9 +247,10 @@ public enum FootoBar implements Function&lt;Foo, Bar&gt; {
 
 }
 						</code></pre>
+
 						<p class="fragment">generated interface</p>
 						<pre class="fragment"><code data-trim>
-public class FootoBarMapper extends Function&lt;Foo, Bar&gt; {
+public interface FootoBarMapper extends Function&lt;Foo, Bar&gt; {
 
 }
 						</code></pre>
@@ -258,6 +260,14 @@ public class FootoBarMapper extends Function&lt;Foo, Bar&gt; {
 						<h3>Java 8 functional interface support</h3>
 
 						<p class="fragment">it's coming!</p>
+					</section>
+
+					<section>
+						<h3>To sum up</h3>
+
+						 <p>any non private method in class annotated with @Mapper will be exposed in a generated interface</p>
+						 <p>&nbsp;</p>
+						 <p>DAMapping will generate a class implementating this interface which will delegate the mapping code implementation to the dedicated class</p>
 					</section>
 
 				</section>
@@ -323,7 +333,7 @@ public class FootoBarMapper extends Function&lt;Foo, Bar&gt; {
 					<section>
 						<h3>What is a MapperFactory?</h3>
 
-						<p class="fragmet">basicaly, a @Mapper class with at least one method annotated with @MapperFactoryMethod</h3>
+						<p class="fragment">basicaly, a @Mapper class with at least one method annotated with @MapperFactoryMethod</h3>
 
 						<pre class="fragment"><code data-trim class="java">
 @Mapper
@@ -331,7 +341,7 @@ public class FooToBar {
   private final boolean enableCrazyCode;
 
   @MapperFactoryMethod
-  public FooToBar instance(boolean enableCrazyCode) {
+  public FooToBar(boolean enableCrazyCode) {
     this.enableCrazyCode = enableCrazyCode;
   }
 
@@ -341,24 +351,36 @@ public class FooToBar {
 }
 						</code></pre>
 
+						<span class="fragment">
+							<p>Can be annotated with @MapperFactoryMethod:</p>
+							<ul>
+								<li>constructor(s) with parameter(s)</li>
+								<li>static method(s) (with ou without parameter)</li>
+							</ul>
+						</span>
+
 					</section>
 
 					<section>
 						<h3>2 interfaces and 1 class are generated</h3>
 
-						<p class="fragment">a Mapper interface</p>
-						<pre class="fragment"><code data-trim>
+						<span class="fragment">
+							<p>a Mapper interface</p>
+							<pre><code data-trim>
 public interface FooToBarMapper {
   Bar tranform(Foo foo);
 }
-						</code></pre>
+							</code></pre>
+						</span>
 
-						<p class="fragment">a MapperFactory interface</p>
-						<pre class="fragment"><code data-trim>
+						<span class="fragment">
+							<p>a MapperFactory interface</p>
+							<pre><code data-trim>
 public interface FooToBarMapperFactory {
   FooToBarMapper instance(boolean enableCrazyCode);
 }
-						</code></pre>
+							</code></pre>
+						</span>
 
 						<p class="fragment">this is the interface to reference in your code</p>
 
@@ -367,9 +389,10 @@ public interface FooToBarMapperFactory {
 					<section>
 						<h3>2 interfaces and 1 class are generated</h3>
 
-						<p>a MapperFactory implementation</p>
-						<pre class="fragment"><code data-trim>
-public class FooToBaMapperFactoryImpl implements FooToBarFactory {
+						<span class="fragment">
+							<p>a MapperFactory implementation</p>
+							<pre><code data-trim>
+public class FooTorBaMapperFactoryImpl implements FooToBarFactory {
 
     @Override public FooToBarMapper instance(boolean enableCrazyCode) {
         return new FooToBarMapperImpl(new FooToBar(enableCrazyCode));
@@ -385,7 +408,45 @@ public class FooToBaMapperFactoryImpl implements FooToBarFactory {
         @Override Bar tranform(Foo foo) { return instance.tranform(foo); }
     }
 }
-						</code></pre>
+							</code></pre>
+						</span>
+					</section>
+
+					<section>
+						<h3>Mapping trees of types</h3>
+
+
+						<span class="fragment">
+							<p>Example: one-to-one mapping from Beans to DTOs</p>
+							<img src="img/hotel_floor_room.png"/>
+						</span>
+
+						<span class="fragment">
+							<p>mapping Room to RoomDto is a basic mapper</p>
+							<pre><code data-trim class="java">
+public class RoomToRoomDto {
+  [...]
+}
+							</code></pre>
+						</span>
+
+						<span class="fragment">
+							<p>dedicated class should use Mapper interface as any other type</p>
+							<pre><code data-trim class="java">
+public class FloorToFloorDto {
+  private RoomToRoomDtoMapper roomMapper = new RoomToRoomDtoMapperImpl();
+  [...]
+}
+							</code></pre>
+
+							<pre><code data-trim class="java">
+public class HotelToHotelDto {
+  private FloorToFloorDtoMapper floorMapper = new FloorToFloorDtoMapperImpl();
+  [...]
+}
+							</code></pre>
+						</span>
+
 					</section>
 				</section>
 
@@ -522,6 +583,9 @@ public class SomeClass {
 
 				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
 				transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+				width: 1056,
+				height: 770,
 
 				// Parallax scrolling
 				// parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
